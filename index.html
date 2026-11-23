@@ -2,7 +2,7 @@
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090914"><title>Neon Studio — Audio Visualizer</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#34245f88,transparent 42%),radial-gradient(ellipse at 95% 25%,#12394b77,transparent 38%),#080a13;color:#f7f5ff;font:14px system-ui}.wrap{max-width:1160px;margin:auto;padding:30px 18px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:30px}.version{flex:none;padding:7px 11px;border:1px solid #7beaff55;border-radius:999px;background:#62dcff12;color:#bdf3ff;font-size:10px;font-weight:800;letter-spacing:.12em;box-shadow:0 0 18px #62dcff12}.brand{display:inline-flex;align-items:center;gap:9px;color:#c3f5ff;letter-spacing:.2em;font-weight:900;font-size:12px}.brand:before{content:"";width:8px;height:8px;border-radius:50%;background:#69eaff;box-shadow:0 0 14px #69eaff}h1{font-size:clamp(32px,5vw,54px);line-height:1.04;letter-spacing:-.045em;margin:22px 0 9px}.grad{background:linear-gradient(100deg,#fff 8%,#c8a9ff 48%,#6deaff 92%);color:transparent;background-clip:text}.sub{color:#aaaecb;letter-spacing:.02em}.layout{display:grid;grid-template-columns:1.55fr .82fr;gap:18px;margin-top:26px;align-items:start}.panel{background:linear-gradient(145deg,#191b2beF,#10121feF);border:1px solid #cbd4ff20;border-radius:22px;padding:19px;box-shadow:0 18px 55px #0006,inset 0 1px #ffffff08;backdrop-filter:blur(12px)}.stage{height:clamp(310px,45vw,500px);background:#0c1020;border:1px solid #ffffff12;border-radius:17px;overflow:hidden;box-shadow:inset 0 0 45px #0008,0 8px 28px #0004}canvas{width:100%;height:100%;display:block}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}button,select,input{font:inherit}button,select{border:1px solid #ffffff25;background:#101424;color:#f5f6ff;border-radius:11px;padding:11px 13px;transition:border-color .18s,background .18s,transform .18s}button{cursor:pointer}button:hover:not(:disabled){border-color:#8deaff88;transform:translateY(-1px)}button:disabled{opacity:.45;cursor:not-allowed}button.primary{background:linear-gradient(105deg,#b49aff,#69eaff);color:#080b16;font-weight:850;border:0;box-shadow:0 5px 20px #67dfff25}input[type=file]{max-width:100%;color:#bfc4dc;font-size:12px}input[type=range]{width:100%;accent-color:#8deaff}label{display:block;color:#b9bfd9;margin:16px 0 7px;font-size:12px;font-weight:650;letter-spacing:.035em}select{width:100%;outline:none}select:focus,button:focus-visible{border-color:#80eaff;outline:2px solid #80eaff33;outline-offset:2px}.side{display:grid!important;grid-column:2;grid-row:1;gap:16px;min-width:0;visibility:visible;opacity:1;position:relative;z-index:2}.side .panel{display:block;min-width:0;visibility:visible}.side .panel>b{font-size:11px;letter-spacing:.16em;color:#d5d8f2}.status{padding:12px 13px;border:1px solid #75eaff22;border-radius:12px;background:linear-gradient(110deg,#52e5ff12,#aa8cff0d);color:#c8f6ff;margin-top:13px;font-size:12px;line-height:1.5}.hint{color:#999fbd;font-size:12px;line-height:1.6}#track{overflow-wrap:anywhere}.audio-info{margin-top:17px;padding:15px;border:1px solid #91dcff24;border-radius:15px;background:linear-gradient(130deg,#11182a,#101322);box-shadow:inset 0 1px #ffffff08}.audio-info-head,.audio-meta,.audio-bottom,.seek-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.audio-info-head b{font-size:10px;letter-spacing:.16em;color:#bdefff}.audio-info-head span{font-size:9px;font-weight:800;letter-spacing:.12em;color:#8ceaff}.audio-title{margin-top:10px;font-size:14px;font-weight:750;color:#f3f6ff;overflow-wrap:anywhere}.audio-meta{margin-top:5px;justify-content:flex-start;flex-wrap:wrap;color:#929bb8;font-size:10px}.seek-row{margin-top:13px;color:#b7c4df;font-size:10px;font-variant-numeric:tabular-nums}.seek-row input{flex:1;min-width:40px}.audio-bottom{margin-top:8px;color:#9da8c4;font-size:10px}.volume-control{display:flex;align-items:center;gap:8px;width:min(42%,170px)}.volume-control button{padding:5px 8px}.volume-control input{width:100%;min-width:30px}@media(max-width:760px){.wrap{padding:18px 13px}.topbar{position:relative}.layout{grid-template-columns:minmax(0,1fr);gap:14px}.layout>main{grid-column:1;grid-row:1}.layout>.side{grid-column:1;grid-row:2;display:grid!important;width:100%;margin-top:2px}.stage{height:300px}.panel{padding:15px}.side{gap:13px}}
-</style></head><body><div class="wrap"><header class="topbar"><div class="brand">♫ NEON STUDIO</div><span class="version" aria-label="Versi aplikasi">VERSION&nbsp; v1.0.4</span></header><h1><span class="grad">Feel the rhythm.</span><br>Shape your visual.</h1><p class="sub">Audio visualizer real-time.</p>
+</style></head><body><div class="wrap"><header class="topbar"><div class="brand">♫ NEON STUDIO</div><span class="version" aria-label="Versi aplikasi">VERSION&nbsp; v1.0.5</span></header><h1><span class="grad">Feel the rhythm.</span><br>Shape your visual.</h1><p class="sub">Audio visualizer real-time.</p>
 <div class="layout"><main class="panel"><div class="stage"><canvas id="viz"></canvas></div><div class="row"><input id="audioFile" type="file" accept="audio/*,.flac,.m4a,.aac"><button id="play" class="primary" disabled>▶ Play</button><button id="stop">■ Stop</button></div><p id="track" class="hint">Pilih file audio dari perangkat.</p>
 <section class="audio-info" aria-label="Informasi audio">
  <div class="audio-info-head"><b>NOW PLAYING</b><span id="playState">STOPPED</span></div>
@@ -101,6 +101,66 @@ refreshAudioInfo();a.onerror=()=>{$('status').textContent='File audio tidak dapa
 function mime(){if(!window.MediaRecorder)return null;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'],webm=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];return ($('format').value==='mp4'?mp4:webm).find(x=>MediaRecorder.isTypeSupported(x))||null}
 function check(){const m=mime(),issues=[];if(!m)issues.push('Format tidak didukung browser ini. Coba WebM.');if(!c.captureStream)issues.push('Canvas capture tidak tersedia.');if(+$('fps').value===90)issues.push('90 FPS eksperimental.');if(+$('fps').value>=60&&$('resolution').value!=='1280x720')issues.push('Mode ini lebih berat; perhatikan suhu dan kemungkinan frame drop.');$('status').textContent=issues.join(' ')||'Codec terdeteksi. Performa ekspor bergantung pada perangkat.';$('export').disabled=!m||!c.captureStream||!a.src;return m}
 ['format','resolution','fps','bitrate'].forEach(id=>$(id).onchange=check);check();
-$('export').onclick=async()=>{if(recording){if(rec&&rec.state!=='inactive')rec.stop();return}const mt=check();if(!mt)return;try{await setup();if(a.paused)await a.play();const [w,h]=$('resolution').value.split('x').map(Number),fps=+$('fps').value,out=document.createElement('canvas');out.width=w;out.height=h;const og=out.getContext('2d',{alpha:false});if(!og)throw new Error('Canvas ekspor tidak tersedia');const stream=out.captureStream(0),videoTrack=stream.getVideoTracks()[0],manualFrames=!!(videoTrack&&videoTrack.requestFrame);if(!manualFrames){stream.getTracks().forEach(t=>t.stop());const fallback=out.captureStream(fps);fallback.getAudioTracks().forEach(t=>t.stop());}const capture=manualFrames?stream:out.captureStream(fps),dest=ac.createMediaStreamDestination();src.connect(dest);dest.stream.getAudioTracks().forEach(t=>capture.addTrack(t));const chunks=[];let live=true,lastExportFrame=0,exportRaf=0;const frameInterval=1000/fps;function exportPaint(now=0){if(!live)return;if(now-lastExportFrame>=frameInterval){draw(now,out,og,true);lastExportFrame=now;if(manualFrames)videoTrack.requestFrame()}exportRaf=requestAnimationFrame(exportPaint)}draw(0,out,og,true);if(manualFrames)videoTrack.requestFrame();rec=new MediaRecorder(capture,{mimeType:mt,videoBitsPerSecond:+$('bitrate').value*1e6,audioBitsPerSecond:192000});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{live=false;cancelAnimationFrame(exportRaf);recording=false;const ext=mt.includes('mp4')?'mp4':'webm',blob=new Blob(chunks,{type:mt}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='neon-studio.'+ext;link.click();capture.getTracks().forEach(t=>t.stop());dest.stream.getTracks().forEach(t=>t.stop());$('export').textContent='Mulai ekspor';$('status').textContent='Video tersimpan: '+ext.toUpperCase()+' — render langsung '+w+'×'+h+'.'};rec.onerror=()=>{live=false;cancelAnimationFrame(exportRaf);recording=false;capture.getTracks().forEach(t=>t.stop());dest.stream.getTracks().forEach(t=>t.stop());$('export').textContent='Mulai ekspor'};rec.start();recording=true;exportRaf=requestAnimationFrame(exportPaint);$('export').textContent='STOP & SIMPAN';$('status').textContent='Render ekspor langsung '+w+'×'+h+' @ '+fps+' FPS. Perangkat mungkin lebih hangat; hentikan bila terasa terlalu panas.'}catch(e){recording=false;$('status').textContent='Ekspor gagal: '+e.message+' — coba WebM 720p30.'}};
+let exportCapture=null,exportDest=null,exportRaf=0,exportLive=false,exportLocked=[];
+function finishExport(){if(!rec||rec.state==='inactive')return;rec.stop()}
+function cleanupExport(){
+ exportLive=false;cancelAnimationFrame(exportRaf);
+ if(exportDest){try{src.disconnect(exportDest)}catch(e){}exportDest.stream.getTracks().forEach(t=>t.stop());exportDest=null}
+ if(exportCapture){exportCapture.getTracks().forEach(t=>t.stop());exportCapture=null}
+ exportLocked.forEach(id=>$(id).disabled=false);exportLocked=[];
+ recording=false;$('export').textContent='Mulai ekspor';
+}
+$('export').onclick=async()=>{
+ if(recording){finishExport();return}
+ const mt=check();if(!mt)return;
+ let chunks=[],out,og,manualFrames=false,videoTrack=null,started=false;
+ try{
+  await setup();
+  const [w,h]=$('resolution').value.split('x').map(Number),fps=+$('fps').value;
+  out=document.createElement('canvas');out.width=w;out.height=h;
+  og=out.getContext('2d',{alpha:false});if(!og)throw new Error('Canvas ekspor tidak tersedia');
+  // Prefer manual frame requests; otherwise use the browser's paced capture stream.
+  let candidate=out.captureStream(0),candidateTrack=candidate.getVideoTracks()[0];
+  if(candidateTrack&&typeof candidateTrack.requestFrame==='function'){
+   exportCapture=candidate;videoTrack=candidateTrack;manualFrames=true;
+  }else{
+   candidate.getTracks().forEach(t=>t.stop());
+   exportCapture=out.captureStream(fps);videoTrack=exportCapture.getVideoTracks()[0];
+  }
+  exportDest=ac.createMediaStreamDestination();src.connect(exportDest);
+  exportDest.stream.getAudioTracks().forEach(t=>exportCapture.addTrack(t));
+  const interval=1000/fps;let last=0;
+  function renderExport(now=0){
+   if(!exportLive)return;
+   if(!last||now-last>=interval){draw(now,out,og,true);last=now;if(manualFrames)videoTrack.requestFrame()}
+   exportRaf=requestAnimationFrame(renderExport);
+  }
+  draw(0,out,og,true);if(manualFrames)videoTrack.requestFrame();
+  rec=new MediaRecorder(exportCapture,{mimeType:mt,videoBitsPerSecond:+$('bitrate').value*1e6,audioBitsPerSecond:192000});
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  rec.onerror=()=>{cleanupExport();$('status').textContent='Perekaman gagal. Coba WebM 720p30.'};
+  rec.onstop=()=>{
+   const ext=mt.includes('mp4')?'mp4':'webm',blob=new Blob(chunks,{type:mt});
+   cleanupExport();
+   if(!blob.size){$('status').textContent='Ekspor kosong. Coba putar ulang lagu lalu ekspor lagi.';return}
+   const url=URL.createObjectURL(blob),link=document.createElement('a');
+   link.href=url;link.download='neon-studio-'+Date.now()+'.'+ext;
+   document.body.appendChild(link);link.click();link.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),60000);
+   $('status').textContent='Selesai: '+ext.toUpperCase()+' · '+w+'×'+h+' · '+fps+' FPS · '+(blob.size/1048576).toFixed(1)+' MB';
+  };
+  rec.start(1000);recording=true;started=true;exportLive=true;
+  exportLocked=['format','resolution','fps','bitrate'];exportLocked.forEach(id=>$(id).disabled=true);
+  $('export').textContent='STOP & SIMPAN';exportRaf=requestAnimationFrame(renderExport);
+  if(a.ended||!a.src)throw new Error('Pilih file audio yang valid terlebih dahulu');
+  if(a.paused){a.currentTime=0;await a.play()}
+  $('status').textContent='Mengekspor '+w+'×'+h+' @ '+fps+' FPS. Rekaman berhenti otomatis saat lagu selesai.';
+ }catch(e){
+  if(started&&rec&&rec.state!=='inactive'){try{rec.stop()}catch(_){}}
+  else cleanupExport();
+  $('status').textContent='Ekspor gagal: '+e.message+' — coba WebM 720p30.';
+ }
+};
+a.addEventListener('ended',()=>{if(recording)finishExport()});
 })();
 </script></body></html>
