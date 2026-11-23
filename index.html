@@ -9,43 +9,36 @@
 <audio id="audio" crossorigin="anonymous"></audio>
 <script>
 (()=>{const $=id=>document.getElementById(id),a=$('audio'),c=$('viz'),g=c.getContext('2d',{alpha:false});let ac,an,src,data,floatData,waveData=new Uint8Array(256),smoothed=new Float32Array(128),rec,recording=false,raf;const palettes={purple:['#aa8cff','#52e5ff'],pink:['#ff58c7','#ffbd69'],green:['#58efa8','#52e5ff'],ice:['#b9f3ff','#5aaeff']};function resize(){const d=Math.min(devicePixelRatio||1,1.25),r=c.getBoundingClientRect();c.width=r.width*d;c.height=r.height*d;g.setTransform(d,0,0,d,0,0)}if('ResizeObserver'in window)new ResizeObserver(resize).observe(c);else window.addEventListener('resize',resize);resize();
-async function setup(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();an=ac.createAnalyser();an.fftSize=1024;an.smoothingTimeConstant=.18;an.minDecibels=-100;an.maxDecibels=-20;src=ac.createMediaElementSource(a);src.connect(an);an.connect(ac.destination);data=new Uint8Array(an.frequencyBinCount);floatData=new Float32Array(an.frequencyBinCount);waveData=new Uint8Array(an.fftSize);smoothed=new Float32Array(an.frequencyBinCount)}if(ac.state==='suspended')await ac.resume()}
-let bandCache={};
-function getBands(count){
- if(!an||!floatData)return new Float32Array(count);
- let levels=bandCache[count];if(!levels){levels=new Float32Array(count);bandCache[count]=levels}
- const binHz=ac.sampleRate/an.fftSize,minHz=35,maxHz=Math.min(16000,ac.sampleRate*.46);
- const minBin=Math.max(1,Math.floor(minHz/binHz)),maxBin=Math.min(floatData.length-1,Math.floor(maxHz/binHz));
+async function setup(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();an=ac.createAnalyser();an.fftSize=1024;an.smoothingTimeConstant=0;src=ac.createMediaElementSource(a);src.connect(an);an.connect(ac.destination);waveData=new Uint8Array(an.fftSize)}if(ac.state==='suspended')await ac.resume()}
+// Read the analyser's real time-domain samples. Each visual segment is the RMS
+// amplitude of its own slice of the current audio waveform (not FFT bands or
+// generated beat animation), so Circular and Equalizer react to the source signal.
+function getWaveBands(count){
+ const levels=new Float32Array(count);
+ if(!an||!waveData)return levels;
+ const samples=waveData.length;
  for(let i=0;i<count;i++){
-  const lo=Math.max(minBin,Math.floor(minBin*Math.pow(maxBin/minBin,i/count)));
-  const hi=Math.max(lo+1,Math.floor(minBin*Math.pow(maxBin/minBin,(i+1)/count)));
+  const start=Math.floor(i*samples/count),end=Math.max(start+1,Math.floor((i+1)*samples/count));
   let power=0,n=0;
-  for(let j=lo;j<=Math.min(hi,maxBin);j++){
-   const db=floatData[j];
-   if(Number.isFinite(db)){const amp=Math.pow(10,db/20);power+=amp*amp;n++}
+  for(let j=start;j<Math.min(end,samples);j++){
+   const sample=(waveData[j]-128)/128;
+   power+=sample*sample;n++;
   }
   const rms=n?Math.sqrt(power/n):0;
-  const level=rms>0?20*Math.log10(rms):-120;
-  // Ignore the noise floor; map useful musical energy to a controlled 0..1 range.
-  const normalized=Math.max(0,Math.min(1,(level+82)/44));
-  const target=Math.pow(normalized,1.18);
-  // Quick attack, smooth but definite release so bars fall back between beats.
-  const rate=target>levels[i]?.58:.24;
-  levels[i]+=(target-levels[i])*rate;
-  if(levels[i]<.006)levels[i]=0;
+  levels[i]=Math.min(1,rms/.28);
  }
  return levels;
 }
 let lastFrame=0;
 function draw(now=0){raf=requestAnimationFrame(draw);if(now-lastFrame<33)return;lastFrame=now;const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;const x=w/2,y=h/2,p=palettes[$('color').value],mode=$('mode').value,k=+$('intensity').value/100;
-if(an){an.getByteFrequencyData(data);an.getFloatFrequencyData(floatData);an.getByteTimeDomainData(waveData)}
+if(an){an.getByteTimeDomainData(waveData)}
 g.clearRect(0,0,w,h);
 // Layered visualizer backdrop: deep gradient, soft color blooms, and a subtle grid.
 const bg=g.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#11132b');bg.addColorStop(.52,'#090d1b');bg.addColorStop(1,'#10152a');g.fillStyle=bg;g.fillRect(0,0,w,h);
 const bloom1=g.createRadialGradient(w*.22,h*.22,0,w*.22,h*.22,Math.max(w,h)*.62);bloom1.addColorStop(0,p[0]+'30');bloom1.addColorStop(1,'transparent');g.fillStyle=bloom1;g.fillRect(0,0,w,h);
 const bloom2=g.createRadialGradient(w*.82,h*.72,0,w*.82,h*.72,Math.max(w,h)*.55);bloom2.addColorStop(0,p[1]+'25');bloom2.addColorStop(1,'transparent');g.fillStyle=bloom2;g.fillRect(0,0,w,h);
 g.save();g.strokeStyle='#c8d8ff12';g.lineWidth=1;const grid=Math.max(28,Math.round(Math.min(w,h)/9));for(let gx=0;gx<=w;gx+=grid){g.beginPath();g.moveTo(gx,0);g.lineTo(gx,h);g.stroke()}for(let gy=0;gy<=h;gy+=grid){g.beginPath();g.moveTo(0,gy);g.lineTo(w,gy);g.stroke()}g.restore();
-const circleBands=getBands(96),barBands=getBands(48),energy=barBands.reduce((a,b)=>a+b,0)/barBands.length,base=Math.min(w,h)*.16;
+const circleBands=getWaveBands(96),barBands=getWaveBands(48),energy=barBands.reduce((a,b)=>a+b,0)/barBands.length,base=Math.min(w,h)*.16;
 g.save();g.globalCompositeOperation='lighter';
 if(mode==='fusion'||mode==='circle'){
  const count=mode==='circle'?96:72;
