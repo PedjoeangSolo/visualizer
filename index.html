@@ -13,7 +13,12 @@ async function setup(){if(!ac){ac=new(window.AudioContext||window.webkitAudioCon
 let lastFrame=0;
 function draw(now=0){raf=requestAnimationFrame(draw);if(now-lastFrame<33)return;lastFrame=now;const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;const x=w/2,y=h/2,p=palettes[$('color').value],mode=$('mode').value,k=+$('intensity').value/100;
 if(an){an.getByteFrequencyData(data);an.getByteTimeDomainData(waveData);for(let i=0;i<data.length;i++)smoothed[i]+=(data[i]-smoothed[i])*.3}
-g.clearRect(0,0,w,h);g.fillStyle='#0b0d1b';g.fillRect(0,0,w,h);
+g.clearRect(0,0,w,h);
+// Layered visualizer backdrop: deep gradient, soft color blooms, and a subtle grid.
+const bg=g.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#11132b');bg.addColorStop(.52,'#090d1b');bg.addColorStop(1,'#10152a');g.fillStyle=bg;g.fillRect(0,0,w,h);
+const bloom1=g.createRadialGradient(w*.22,h*.22,0,w*.22,h*.22,Math.max(w,h)*.62);bloom1.addColorStop(0,p[0]+'30');bloom1.addColorStop(1,'transparent');g.fillStyle=bloom1;g.fillRect(0,0,w,h);
+const bloom2=g.createRadialGradient(w*.82,h*.72,0,w*.82,h*.72,Math.max(w,h)*.55);bloom2.addColorStop(0,p[1]+'25');bloom2.addColorStop(1,'transparent');g.fillStyle=bloom2;g.fillRect(0,0,w,h);
+g.save();g.strokeStyle='#c8d8ff12';g.lineWidth=1;const grid=Math.max(28,Math.round(Math.min(w,h)/9));for(let gx=0;gx<=w;gx+=grid){g.beginPath();g.moveTo(gx,0);g.lineTo(gx,h);g.stroke()}for(let gy=0;gy<=h;gy+=grid){g.beginPath();g.moveTo(0,gy);g.lineTo(w,gy);g.stroke()}g.restore();
 const energy=smoothed.reduce((a,b)=>a+b,0)/Math.max(1,smoothed.length)/255,base=Math.min(w,h)*.16;
 g.save();g.globalCompositeOperation='lighter';
 if(mode==='fusion'||mode==='circle'){
@@ -25,7 +30,7 @@ if(mode==='fusion'||mode==='bars'){
  const count=48,bw=w/count*.62,mid=h*.8;for(let i=0;i<count;i++){const n=smoothed[Math.floor(i*smoothed.length/count)]/255,hh=4+n*h*.3*k,xx=i*w/count;g.globalAlpha=.72+n*.28;g.fillStyle=i%2?p[0]:p[1];g.fillRect(xx,mid-hh,bw,hh)}
 }
 if(mode==='fusion'||mode==='wave'){
- g.beginPath();const center=mode==='wave'?h*.5:h*.78,step=2;for(let i=0;i<=w;i+=step){const idx=Math.min(waveData.length-1,Math.floor(i/w*waveData.length)),sample=((waveData[idx]||128)-128)/128,yy=center+sample*h*.2*k;if(i===0)g.moveTo(i,yy);else g.lineTo(i,yy)}g.strokeStyle=p[1];g.lineWidth=2;g.globalAlpha=.9;g.stroke();
+ g.beginPath();const center=mode==='wave'?h*.5:h*.78,step=2;for(let i=0;i<=w;i+=step){const idx=Math.min(waveData.length-1,Math.floor(i/w*waveData.length)),sample=((waveData[idx]||128)-128)/128,yy=center+sample*h*.2*k;if(i===0)g.moveTo(i,yy);else g.lineTo(i,yy)}g.save();g.globalAlpha=.95;g.strokeStyle='#ffffff';g.lineWidth=2;g.shadowColor='#ffffff';g.shadowBlur=mode==='wave'?13:9;g.stroke();g.shadowBlur=0;g.globalAlpha=.9;g.lineWidth=1.35;g.stroke();g.restore();
 }
 g.restore()}
 draw();
