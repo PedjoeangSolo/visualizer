@@ -8,27 +8,37 @@
 <section class="panel"><b>VIDEO EXPORT</b><label>Format</label><select id="format"><option value="mp4">MP4 (H.264)</option><option value="webm">WebM (VP9/VP8)</option></select><label>Resolusi</label><select id="resolution"><option value="1280x720">720p HD</option><option value="1920x1080" selected>1080p Full HD (YouTube)</option><option value="2560x1440">1440p QHD</option></select><label>Frame rate</label><select id="fps"><option>24</option><option>30</option><option selected>60</option><option>90</option></select><label>Bitrate</label><select id="bitrate"><option value="4">4 Mbps</option><option value="8" selected>8 Mbps</option><option value="12">12 Mbps</option><option value="20">20 Mbps</option></select><button id="export" class="primary" style="width:100%;margin-top:15px" disabled>Mulai ekspor</button><div id="status" class="status">Memeriksa dukungan browser…</div><p class="hint">MP4 hanya aktif bila browser mendukung codec. Jika tidak, pilih WebM. FPS aktual bergantung pada perangkat.</p></section></aside></div></div>
 <audio id="audio" crossorigin="anonymous"></audio>
 <script>
-(()=>{const $=id=>document.getElementById(id),a=$('audio'),c=$('viz'),g=c.getContext('2d',{alpha:false});let ac,an,src,data,waveData=new Uint8Array(256),smoothed=new Float32Array(128),rec,recording=false,raf;const palettes={purple:['#aa8cff','#52e5ff'],pink:['#ff58c7','#ffbd69'],green:['#58efa8','#52e5ff']};function resize(){const d=Math.min(devicePixelRatio||1,1.25),r=c.getBoundingClientRect();c.width=r.width*d;c.height=r.height*d;g.setTransform(d,0,0,d,0,0)}if('ResizeObserver'in window)new ResizeObserver(resize).observe(c);else window.addEventListener('resize',resize);resize();
-async function setup(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();an=ac.createAnalyser();an.fftSize=1024;an.smoothingTimeConstant=.35;src=ac.createMediaElementSource(a);src.connect(an);an.connect(ac.destination);data=new Uint8Array(an.frequencyBinCount);waveData=new Uint8Array(an.fftSize);smoothed=new Float32Array(an.frequencyBinCount)}if(ac.state==='suspended')await ac.resume()}
+(()=>{const $=id=>document.getElementById(id),a=$('audio'),c=$('viz'),g=c.getContext('2d',{alpha:false});let ac,an,src,data,floatData,waveData=new Uint8Array(256),smoothed=new Float32Array(128),rec,recording=false,raf;const palettes={purple:['#aa8cff','#52e5ff'],pink:['#ff58c7','#ffbd69'],green:['#58efa8','#52e5ff']};function resize(){const d=Math.min(devicePixelRatio||1,1.25),r=c.getBoundingClientRect();c.width=r.width*d;c.height=r.height*d;g.setTransform(d,0,0,d,0,0)}if('ResizeObserver'in window)new ResizeObserver(resize).observe(c);else window.addEventListener('resize',resize);resize();
+async function setup(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();an=ac.createAnalyser();an.fftSize=1024;an.smoothingTimeConstant=.18;an.minDecibels=-100;an.maxDecibels=-20;src=ac.createMediaElementSource(a);src.connect(an);an.connect(ac.destination);data=new Uint8Array(an.frequencyBinCount);floatData=new Float32Array(an.frequencyBinCount);waveData=new Uint8Array(an.fftSize);smoothed=new Float32Array(an.frequencyBinCount)}if(ac.state==='suspended')await ac.resume()}
 let bandCache={};
 function getBands(count){
- if(!an||!data.length)return new Float32Array(count);
+ if(!an||!floatData)return new Float32Array(count);
  let levels=bandCache[count];if(!levels){levels=new Float32Array(count);bandCache[count]=levels}
- const maxBin=Math.max(4,Math.floor(data.length*.88)),minBin=2;
+ const binHz=ac.sampleRate/an.fftSize,minHz=35,maxHz=Math.min(16000,ac.sampleRate*.46);
+ const minBin=Math.max(1,Math.floor(minHz/binHz)),maxBin=Math.min(floatData.length-1,Math.floor(maxHz/binHz));
  for(let i=0;i<count;i++){
   const lo=Math.max(minBin,Math.floor(minBin*Math.pow(maxBin/minBin,i/count)));
   const hi=Math.max(lo+1,Math.floor(minBin*Math.pow(maxBin/minBin,(i+1)/count)));
-  let sum=0,n=0;for(let j=lo;j<Math.min(hi,data.length);j++){const v=data[j]/255;sum+=v*v;n++}
-  const rms=n?Math.sqrt(sum/n):0;
-  const target=Math.pow(Math.max(0,Math.min(1,(rms-.035)/.58)),.78);
-  const rate=target>levels[i]?.72:.20;
+  let power=0,n=0;
+  for(let j=lo;j<=Math.min(hi,maxBin);j++){
+   const db=floatData[j];
+   if(Number.isFinite(db)){const amp=Math.pow(10,db/20);power+=amp*amp;n++}
+  }
+  const rms=n?Math.sqrt(power/n):0;
+  const level=rms>0?20*Math.log10(rms):-120;
+  // Ignore the noise floor; map useful musical energy to a controlled 0..1 range.
+  const normalized=Math.max(0,Math.min(1,(level+82)/44));
+  const target=Math.pow(normalized,1.18);
+  // Quick attack, smooth but definite release so bars fall back between beats.
+  const rate=target>levels[i]?.58:.24;
   levels[i]+=(target-levels[i])*rate;
+  if(levels[i]<.006)levels[i]=0;
  }
  return levels;
 }
 let lastFrame=0;
 function draw(now=0){raf=requestAnimationFrame(draw);if(now-lastFrame<33)return;lastFrame=now;const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;const x=w/2,y=h/2,p=palettes[$('color').value],mode=$('mode').value,k=+$('intensity').value/100;
-if(an){an.getByteFrequencyData(data);an.getByteTimeDomainData(waveData)}
+if(an){an.getByteFrequencyData(data);an.getFloatFrequencyData(floatData);an.getByteTimeDomainData(waveData)}
 g.clearRect(0,0,w,h);
 // Layered visualizer backdrop: deep gradient, soft color blooms, and a subtle grid.
 const bg=g.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#11132b');bg.addColorStop(.52,'#090d1b');bg.addColorStop(1,'#10152a');g.fillStyle=bg;g.fillRect(0,0,w,h);
