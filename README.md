@@ -1,5 +1,9 @@
 # Neon Studio — Audio Visualizer
 
+> **Coba langsung:** [https://pedjoeangsolo.github.io/visualizer/](https://pedjoeangsolo.github.io/visualizer/)
+
+Buka tautan di atas untuk mencoba Neon Studio langsung melalui browser—tidak perlu mengunduh atau memasang aplikasi.
+
 Aplikasi audio visualizer berbasis browser untuk Android dan Windows 11.
 
 ## Fitur
@@ -11,7 +15,7 @@ Aplikasi audio visualizer berbasis browser untuk Android dan Windows 11.
 - Pemeriksaan dukungan codec browser dan peringatan performa.
 
 ## Menjalankan
-1. Buka `index.html` di Google Chrome atau Microsoft Edge terbaru.
+1. Buka **[Neon Studio](https://pedjoeangsolo.github.io/visualizer/)**.
 2. Pilih file audio dari perangkat.
 3. Tekan Play.
 4. Atur visual dan pengaturan ekspor.
@@ -27,4 +31,7 @@ Default: 1920×1080 (16:9), 60 FPS, MP4, 8 Mbps. Browser yang tidak mendukung MP
 - Untuk Windows 11 gunakan Chrome atau Edge terbaru. Di Android, tetap buka tab selama ekspor dan jangan kunci layar.
 
 ## GitHub Pages
-Aktifkan melalui **Settings → Pages → Deploy from a branch → main → /(root) → Save**. Setelah deployment selesai, situs akan tersedia di alamat GitHub Pages repository ini.
+Situs dipublikasikan melalui GitHub Pages dari branch `main` dan folder `/(root)`.
+
+**Website:** https://pedjoeangsolo.github.io/visualizer/
+**Repository:** https://github.com/PedjoeangSolo/visualizer
